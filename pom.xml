@@ -55,7 +55,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <dependency>
             <groupId>com.github.qurbonzoda</groupId>
             <artifactId>PersistentVector</artifactId>
-            <version>125d8ba12ccdc5dbe13227452d654e0db0442934</version>
+            <version>7c61d14570e6d6bea6f6e6dfa0ef8e32735526db</version>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
