@@ -17,12 +17,21 @@ open class Add {
             BM_100, BM_1000, BM_10000, BM_100000, BM_1000000)
     var listSize: Int = 0
 
+    @Param(FIXED_HEIGHT_SIZE_8, FIXED_HEIGHT_SIZE_16, FIXED_HEIGHT_SIZE_32, FIXED_HEIGHT_SIZE_64,
+            VARIABLE_HEIGHT_SIZE_8, VARIABLE_HEIGHT_SIZE_16, VARIABLE_HEIGHT_SIZE_32, VARIABLE_HEIGHT_SIZE_64)
+    var impl: String = ""
+
     private var emptyVector: ImmutableVector<String> = emptyVector()
+
+    @Setup(Level.Trial)
+    fun prepare() {
+        this.emptyVector = EMPTY_VECTOR[impl]!!
+    }
 
     @Benchmark
     fun addLast(): ImmutableVector<String> {
-        var deque = emptyVector
-        repeat(times = listSize) {
+        var deque = this.emptyVector
+        repeat(times = this.listSize) {
             deque = deque.addLast("some element")
         }
         return deque
