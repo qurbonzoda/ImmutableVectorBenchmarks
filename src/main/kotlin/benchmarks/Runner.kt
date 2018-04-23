@@ -1,7 +1,5 @@
 package benchmarks
 
-import benchmarks.persistentVector.FIXED_HEIGHT_SIZE_8
-import benchmarks.persistentVector.VARIABLE_HEIGHT_SIZE_8
 import org.openjdk.jmh.results.RunResult
 import org.openjdk.jmh.runner.Runner
 import org.openjdk.jmh.runner.options.OptionsBuilder
@@ -12,13 +10,12 @@ fun main(args: Array<String>) {
     val implementation = "persistentVector"
     val outputFile = "teamcityArtifacts/$implementation.csv"
     val options = OptionsBuilder()
-            .forks(2)
             .jvmArgs("-Xms3072m", "-Xmx3072m")
             .include(implementation)
             .warmupIterations(10)
             .measurementIterations(10)
-            .warmupTime(TimeValue.milliseconds(1000))
-            .measurementTime(TimeValue.milliseconds(1000))
+            .warmupTime(TimeValue.milliseconds(500))
+            .measurementTime(TimeValue.milliseconds(500))
             .addProfiler("gc")
 
     val runResults = Runner(options.build()).run()
@@ -49,24 +46,21 @@ fun csvRowFrom(result: RunResult, implementation: String): String {
     val allocationRate = result.secondaryResults["·gc.alloc.rate.norm"]!!.getScore() / listSize
 
     val impl = result.params.getParam("impl")
-    val (bufferType, bufferSize) = buffer(impl)
-    val heightType = heightType(impl)
+    val (heightType, bufferType, bufferSize) = extractInfo(impl)
 
     return "$implementation,$method,$listSize,$heightType,$bufferType,$bufferSize,%.3f,%.3f,%.3f"
             .format(score, scoreError, allocationRate)
 }
 
-fun buffer(impl: String): Pair<String, String> {
-    val lastDelimiter = impl.indexOfLast { it =='_' }
+fun extractInfo(impl: String): Triple<String, String, String> {
+    val lastDelimiter = impl.indexOfLast { it == '_' }
     val bufferSize = impl.substring(lastDelimiter + 1)
 
-    return Pair("FIXED_SIZE", bufferSize)
-}
-
-fun heightType(impl: String): String {
-    if (impl.startsWith("FIXED_HEIGHT")) {
-        return "FIXED_HEIGHT"
+    if (impl.startsWith("FIXED_H_")) {
+        val delimiter = impl.substring(8).indexOfFirst { it == '_' }
+        return Triple("FIXED", impl.substring(8, 8 + delimiter), bufferSize)
     }
-    assert(impl.startsWith("VARIABLE_HEIGHT"))
-    return "VARIABLE_HEIGHT"
+    assert(impl.startsWith("VARIABLE_H_"))
+    val delimiter = impl.substring(11).indexOfFirst { it == '_' }
+    return Triple("VARIABLE", impl.substring(11, 11 + delimiter), bufferSize)
 }
