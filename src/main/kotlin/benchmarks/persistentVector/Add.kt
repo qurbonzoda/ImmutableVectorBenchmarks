@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Thread)
 open class Add {
-    @Param(BM_1, BM_4, BM_10, BM_15, BM_20, BM_25, BM_35, BM_50, BM_75,
-            BM_100, BM_1000, BM_10000, BM_100000, BM_1000000)
+    @Param(BM_1, BM_4, BM_10, BM_15, BM_20, BM_25, BM_50,
+            BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
     @Param(FIXED_H_FIXED_S_8, FIXED_H_FIXED_S_16, FIXED_H_FIXED_S_32, FIXED_H_FIXED_S_64,

@@ -11,12 +11,12 @@ fun main(args: Array<String>) {
     val outputFile = "teamcityArtifacts/$implementation.csv"
     val options = OptionsBuilder()
             .jvmArgs("-Xms3072m", "-Xmx3072m")
-            .include(implementation)
+            .include("getByIndex")
+            .include("setByIndex")
             .warmupIterations(10)
             .measurementIterations(10)
             .warmupTime(TimeValue.milliseconds(2000))
             .measurementTime(TimeValue.milliseconds(2000))
-            .param("listSize", "10000000", "100000000")
             .addProfiler("gc")
 
     val runResults = Runner(options.build()).run()

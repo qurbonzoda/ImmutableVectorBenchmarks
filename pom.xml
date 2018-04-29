@@ -55,7 +55,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <dependency>
             <groupId>com.github.qurbonzoda</groupId>
             <artifactId>PersistentVector</artifactId>
-            <version>6fcc81672768f9b2a512b01db7b799698cf93a30</version>
+            <version>16e11147c697018b761314ebf9d15ea14e20fc19</version>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
@@ -87,7 +87,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
            Available versions are listed here:
                 http://kotlinlang.org/docs/reference/using-maven.html#plugin-and-versions
          -->
-        <kotlin.version>1.0.2</kotlin.version>
+        <kotlin.version>1.2.31</kotlin.version>
 
         <!--
             Select a JMH benchmark generator to use. Available options:
