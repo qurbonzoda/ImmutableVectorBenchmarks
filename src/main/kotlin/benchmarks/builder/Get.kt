@@ -1,4 +1,4 @@
-package benchmarks.persistentVector
+package benchmarks.builder
 
 import benchmarks.*
 import kotlinx.collections.immutable.ImmutableList
@@ -18,13 +18,13 @@ open class Get {
             BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    var vector: ImmutableList<String> = persistentVectorOf()
+    var vector: ImmutableList.Builder<String> = persistentVectorOf<String>().builder()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = persistentVectorOf()
+        this.vector = persistentVectorOf<String>().builder()
         repeat(times = listSize) {
-            vector = vector.add("some element")
+            vector.add("some element")
         }
     }
 

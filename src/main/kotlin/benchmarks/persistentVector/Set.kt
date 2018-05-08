@@ -1,8 +1,8 @@
 package benchmarks.persistentVector
 
 import benchmarks.*
-import immutableVector.ImmutableVector
-import immutableVector.sizeNotInBuffer.fixedHeight.fixedBufferSize.bufferSize8.emptyVector
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.implementations.immutableList.persistentVectorOf
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.TimeUnit
 
@@ -17,27 +17,18 @@ open class Set {
             BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    @Param(FIXED_H_FIXED_S_8, FIXED_H_FIXED_S_16, FIXED_H_FIXED_S_32, FIXED_H_FIXED_S_64,
-            FIXED_H_FLAT_S_8, FIXED_H_FLAT_S_16, FIXED_H_FLAT_S_32, FIXED_H_FLAT_S_64,
-            FIXED_H_GROWABLE_S_8, FIXED_H_GROWABLE_S_16, FIXED_H_GROWABLE_S_32, FIXED_H_GROWABLE_S_64,
-
-            VARIABLE_H_FIXED_S_8, VARIABLE_H_FIXED_S_16, VARIABLE_H_FIXED_S_32, VARIABLE_H_FIXED_S_64,
-            VARIABLE_H_FLAT_S_8, VARIABLE_H_FLAT_S_16, VARIABLE_H_FLAT_S_32, VARIABLE_H_FLAT_S_64,
-            VARIABLE_H_GROWABLE_S_8, VARIABLE_H_GROWABLE_S_16, VARIABLE_H_GROWABLE_S_32, VARIABLE_H_GROWABLE_S_64)
-    var impl: String = ""
-
-    var vector: ImmutableVector<String> = emptyVector()
+    var vector: ImmutableList<String> = persistentVectorOf()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = EMPTY_VECTOR[impl]!!
+        this.vector = persistentVectorOf()
         repeat(times = listSize) {
-            vector = vector.addLast("some element")
+            vector = vector.add("some element")
         }
     }
 
     @Benchmark
-    fun setByIndex(): ImmutableVector<String> {
+    fun setByIndex(): ImmutableList<String> {
         for (i in 0 until vector.size) {
             vector = vector.set(i, "another element")
         }

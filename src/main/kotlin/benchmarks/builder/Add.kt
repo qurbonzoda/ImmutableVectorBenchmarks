@@ -1,4 +1,4 @@
-package benchmarks.persistentVector
+package benchmarks.builder
 
 import benchmarks.*
 import kotlinx.collections.immutable.ImmutableList
@@ -21,19 +21,19 @@ open class Add {
     private var emptyVector: ImmutableList<String> = persistentVectorOf()
 
     @Benchmark
-    fun addLast(): ImmutableList<String> {
-        var vector = this.emptyVector
+    fun addLast(): ImmutableList.Builder<String> {
+        val vector = this.emptyVector.builder()
         repeat(times = this.listSize) {
-            vector = vector.add("some element")
+            vector.add("some element")
         }
         return vector
     }
 
     @Benchmark
-    fun addLastAndIterate(bh: Blackhole): ImmutableList<String> {
-        var vector = this.emptyVector
+    fun addLastAndIterate(bh: Blackhole): ImmutableList.Builder<String> {
+        val vector = this.emptyVector.builder()
         repeat(times = this.listSize) {
-            vector = vector.add("some element")
+            vector.add("some element")
         }
 
         for (e in vector) {
@@ -44,10 +44,10 @@ open class Add {
     }
 
     @Benchmark
-    fun addLastAndGet(bh: Blackhole): ImmutableList<String> {
-        var vector = this.emptyVector
+    fun addLastAndGet(bh: Blackhole): ImmutableList.Builder<String> {
+        val vector = this.emptyVector.builder()
         repeat(times = this.listSize) {
-            vector = vector.add("some element")
+            vector.add("some element")
         }
 
         for (i in 0 until vector.size) {
