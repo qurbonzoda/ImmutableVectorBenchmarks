@@ -327,22 +327,22 @@ class PersistentVectorBuilder<E>(private var rest: Array<Any?>?,
             return oldElement
         }
 
-        val pair = setInRest(rest!!, shiftStart, index, element)
-        this.rest = pair.first
-        return pair.second
+        val oldElement = ObjectWrapper(null)
+        this.rest = setInRest(rest!!, shiftStart, index, element, oldElement)
+        return oldElement.value as E
     }
 
-    private fun setInRest(rest: Array<Any?>, shift: Int, index: Int, e: E): Pair<Array<Any?>, E> {
+    private fun setInRest(rest: Array<Any?>, shift: Int, index: Int, e: E, oldElement: ObjectWrapper): Array<Any?> {
         val bufferIndex = (index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
         val mutableRest = makeMutable(rest)
 
         if (shift == 0) {
-            val oldElement = mutableRest[bufferIndex]
+            oldElement.value = mutableRest[bufferIndex]
             mutableRest[bufferIndex] = e
-            return Pair(mutableRest, oldElement as E)
+            return mutableRest
         }
-        val pair = setInRest(mutableRest[bufferIndex] as Array<Any?>,shift - LOG_MAX_BUFFER_SIZE, index, e)
-        mutableRest[bufferIndex] = pair.first
-        return Pair(mutableRest, pair.second)
+        mutableRest[bufferIndex] =
+                setInRest(mutableRest[bufferIndex] as Array<Any?>,shift - LOG_MAX_BUFFER_SIZE, index, e, oldElement)
+        return mutableRest
     }
 }

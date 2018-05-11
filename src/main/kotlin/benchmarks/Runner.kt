@@ -15,6 +15,7 @@ fun main(args: Array<String>) {
 //            .include("getByIndex")
 //            .include("setByIndex")
 //            .include("firstToLast")
+//            .include("removeLast")
             .warmupIterations(10)
             .measurementIterations(10)
             .warmupTime(TimeValue.milliseconds(2000))

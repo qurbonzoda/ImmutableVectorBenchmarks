@@ -23,6 +23,8 @@ internal const val LOG_MAX_BUFFER_SIZE = 5
 internal const val MAX_BUFFER_SIZE_MINUS_ONE = MAX_BUFFER_SIZE - 1
 internal const val MAX_BUFFER_SIZE_PlUS_ONE = MAX_BUFFER_SIZE + 1
 
+internal class ObjectWrapper(var value: Any?)
+
 fun <E> persistentVectorOf(): ImmutableList<E> {
     return EmptyPersistentVector as ImmutableList<E>
 }
