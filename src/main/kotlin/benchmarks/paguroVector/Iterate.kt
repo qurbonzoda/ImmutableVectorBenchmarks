@@ -1,10 +1,9 @@
-package benchmarks.persistentVector
+package benchmarks.paguroVector
 
 import benchmarks.*
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.implementations.immutableList.persistentVectorOf
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
+import org.organicdesign.fp.collections.PersistentVector
 import java.util.concurrent.TimeUnit
 
 @Fork(1)
@@ -18,13 +17,13 @@ open class Iterate {
             BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    var vector: ImmutableList<String> = persistentVectorOf()
+    var vector = PersistentVector.empty<String>()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = persistentVectorOf()
+        this.vector = PersistentVector.empty<String>()
         repeat(times = listSize) {
-            vector = vector.add("some element")
+            vector = vector.append("some element")
         }
     }
 

@@ -7,24 +7,26 @@ import org.openjdk.jmh.runner.options.TimeValue
 import java.io.FileWriter
 
 fun main(args: Array<String>) {
-    val implementation = "persistentVector"
-    val outputFile = "teamcityArtifacts/$implementation.csv"
-    val options = OptionsBuilder()
-            .jvmArgs("-Xms3072m", "-Xmx3072m")
-//            .include("addLast$")
-//            .include("getByIndex")
-//            .include("setByIndex")
-//            .include("firstToLast")
-//            .include("removeLast")
-            .warmupIterations(10)
-            .measurementIterations(10)
-            .warmupTime(TimeValue.milliseconds(2000))
-            .measurementTime(TimeValue.milliseconds(2000))
-//            .param("listSize", BM_1000000/*, BM_10000000*/)
-            .addProfiler("gc")
+    for (implementation in args) {
+        val outputFile = "teamcityArtifacts/$implementation.csv"
+        val options = OptionsBuilder()
+                .jvmArgs("-Xms3072m", "-Xmx3072m")
+//                .include("addLast$")
+//                .include("getByIndex")
+//                .include("setByIndex")
+//                .include("firstToLast")
+//                .include("removeLast")
+                .include(implementation)
+                .warmupIterations(10)
+                .measurementIterations(10)
+                .warmupTime(TimeValue.milliseconds(2000))
+                .measurementTime(TimeValue.milliseconds(2000))
+//                .param("listSize", BM_1000000/*, BM_10000000*/)
+                .addProfiler("gc")
 
-    val runResults = Runner(options.build()).run()
-    printResults(runResults, implementation, outputFile)
+        val runResults = Runner(options.build()).run()
+        printResults(runResults, implementation, outputFile)
+    }
 }
 
 fun printResults(runResults: Collection<RunResult>, implementation: String, outputFile: String) {

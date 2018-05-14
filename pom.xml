@@ -53,9 +53,29 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
     <dependencies>
         <dependency>
-            <groupId>com.github.qurbonzoda</groupId>
-            <artifactId>PersistentVector</artifactId>
-            <version>16e11147c697018b761314ebf9d15ea14e20fc19</version>
+            <groupId>org.organicdesign</groupId>
+            <artifactId>Paguro</artifactId>
+            <version>3.0.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aol.cyclops</groupId>
+            <artifactId>cyclops-scala</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aol.cyclops</groupId>
+            <artifactId>cyclops-clojure</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aol.cyclops</groupId>
+            <artifactId>cyclops-dexx</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aol.cyclops</groupId>
+            <artifactId>cyclops-javaslang</artifactId>
+            <version>8.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>

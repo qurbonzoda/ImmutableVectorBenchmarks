@@ -1,8 +1,7 @@
-package benchmarks.persistentVector
+package benchmarks.scalaVector
 
 import benchmarks.*
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.implementations.immutableList.persistentVectorOf
+import com.aol.cyclops.scala.collections.ScalaPVector
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
 import java.util.concurrent.TimeUnit
@@ -18,13 +17,13 @@ open class Iterate {
             BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    var vector: ImmutableList<String> = persistentVectorOf()
+    var vector = ScalaPVector.emptyPVector<String>()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = persistentVectorOf()
+        this.vector = ScalaPVector.emptyPVector<String>()
         repeat(times = listSize) {
-            vector = vector.add("some element")
+            vector = vector.plus("some element")
         }
     }
 

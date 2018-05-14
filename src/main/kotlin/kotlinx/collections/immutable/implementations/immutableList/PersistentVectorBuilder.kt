@@ -19,14 +19,16 @@ package kotlinx.collections.immutable.implementations.immutableList
 import kotlinx.collections.immutable.ImmutableList
 import java.util.concurrent.atomic.AtomicReference
 
+private class Marker
+
 class PersistentVectorBuilder<E>(private var rest: Array<Any?>?,
                                  private var last: Array<E>?,
                                  override var size: Int,
                                  private var shiftStart: Int) : AbstractMutableList<E>(), ImmutableList.Builder<E> {
-    private val atomicReference = AtomicReference(Thread.currentThread())
+    private var marker = Marker()
 
     override fun build(): ImmutableList<E> {
-        atomicReference.set(null)
+        marker = Marker()
         if (rest == null) {
             if (last == null) {
                 return persistentVectorOf()
@@ -43,22 +45,16 @@ class PersistentVectorBuilder<E>(private var rest: Array<Any?>?,
         return ((size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
     }
 
-    private fun ensureMutable() {
-        if (atomicReference.get() == null) {
-            throw IllegalStateException("Mutating after `build()` call")
-        }
-    }
-
     private fun <T> makeMutable(buffer: Array<T>?): Array<T> {
         if (buffer == null) {
             val newBuffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE_PlUS_ONE)
-            newBuffer[MAX_BUFFER_SIZE] = atomicReference
+            newBuffer[MAX_BUFFER_SIZE] = marker
             return newBuffer as Array<T>
         }
-        if (buffer.size != MAX_BUFFER_SIZE_PlUS_ONE || buffer[MAX_BUFFER_SIZE] !== atomicReference) {
+        if (buffer.size != MAX_BUFFER_SIZE_PlUS_ONE || buffer[MAX_BUFFER_SIZE] !== marker) {
             val newBuffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE_PlUS_ONE)
             System.arraycopy(buffer, 0, newBuffer, 0, minOf(buffer.size, MAX_BUFFER_SIZE))
-            newBuffer[MAX_BUFFER_SIZE] = atomicReference
+            newBuffer[MAX_BUFFER_SIZE] = marker
             return newBuffer as Array<T>
         }
         return buffer
@@ -67,12 +63,11 @@ class PersistentVectorBuilder<E>(private var rest: Array<Any?>?,
     private fun <T> mutableBufferWith(element: T): Array<T> {
         val buffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE_PlUS_ONE)
         buffer[0] = element
-        buffer[MAX_BUFFER_SIZE] = atomicReference
+        buffer[MAX_BUFFER_SIZE] = marker
         return buffer as Array<T>
     }
 
     override fun add(element: E): Boolean {
-        ensureMutable()
         modCount += 1
 
         val lastSize = size - lastOff()
@@ -131,7 +126,6 @@ class PersistentVectorBuilder<E>(private var rest: Array<Any?>?,
             return
         }
 
-        ensureMutable()
         modCount += 1
 
         val lastOff = this.lastOff()
