@@ -73,8 +73,9 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
             return this.addInLast(this.rest, index - lastOff, element)
         }
 
-        val pair = this.addInRest(this.rest, this.shiftStart, index, element)
-        return this.addInLast(pair.first, 0, pair.second as E)
+        val lastElementWrapper = ObjectWrapper(null)
+        val newRest = this.addInRest(this.rest, this.shiftStart, index, element, lastElementWrapper)
+        return this.addInLast(newRest, 0, lastElementWrapper.value as E)
     }
 
     private fun addInLast(rest: Array<Any?>, index: Int, element: E): PersistentVector<E> {
@@ -92,30 +93,27 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
         return this.pushFullLast(rest, newLast, this.bufferWithOnlyElement(lastValue) as Array<E>)
     }
 
-    private fun addInRest(rest: Array<Any?>, shift: Int, index: Int, element: Any?): Pair<Array<Any?>, Any?> {
+    private fun addInRest(rest: Array<Any?>, shift: Int, index: Int, element: Any?, lastWrapper: ObjectWrapper): Array<Any?> {
         val bufferIndex = (index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
 
         if (shift == 0) {
-            val lastValue = rest.last()
+            lastWrapper.value = rest[MAX_BUFFER_SIZE - 1]
             val newRest = if (bufferIndex == 0) arrayOfNulls<Any?>(MAX_BUFFER_SIZE) else rest.copyOf()
             System.arraycopy(rest, bufferIndex, newRest, bufferIndex + 1, MAX_BUFFER_SIZE - bufferIndex - 1)
             newRest[bufferIndex] = element
-            return Pair(newRest, lastValue)
+            return newRest
         }
 
         val newRest = rest.copyOf()
-        var pair = addInRest(newRest[bufferIndex] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, index, element)
-        newRest[bufferIndex] = pair.first
+        newRest[bufferIndex] = addInRest(rest[bufferIndex] as Array<Any?>,
+                shift - LOG_MAX_BUFFER_SIZE, index, element, lastWrapper)
 
         for (i in bufferIndex + 1 until MAX_BUFFER_SIZE) {
-            if (newRest[i] == null) {
-                break
-            }
-            pair = addInRest(newRest[i] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, 0, pair.second)
-            newRest[i] = pair.first
+            if (newRest[i] == null) { break }
+            newRest[i] = addInRest(rest[i] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, 0, lastWrapper.value, lastWrapper)
         }
 
-        return Pair(newRest, pair.second)
+        return newRest
     }
 
     override fun removeAt(index: Int): ImmutableList<E> {
@@ -125,17 +123,18 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
         if (index >= this.lastOff()) {
             return this.removeFromLast(this.rest, this.lastOff(), this.shiftStart, index - this.lastOff())
         }
-        val newRest = this.removeFromRest(this.rest, this.shiftStart, index, this.last.first())
-        return this.removeFromLast(newRest.first, this.lastOff(), this.shiftStart, 0)
+        val lastElementWrapper = ObjectWrapper(this.last[0])
+        val newRest = this.removeFromRest(this.rest, this.shiftStart, index, lastElementWrapper)
+        return this.removeFromLast(newRest, this.lastOff(), this.shiftStart, 0)
     }
 
     private fun pullLastBufferFromRest(rest: Array<Any?>, restSize: Int, shift: Int): ImmutableList<E> {
         if (shift == 0) {
             return SmallPersistentVector(rest as Array<E>)
         }
-        val pair = this.pullLastBuffer(rest, shift, restSize - 1)
-        val newRest = pair.first!!
-        val newLast = pair.second as Array<E>
+        val lastBufferWrapper = ObjectWrapper(null)
+        val newRest = this.pullLastBuffer(rest, shift, restSize - 1, lastBufferWrapper)!!
+        val newLast = lastBufferWrapper.value as Array<E>
 
         if (newRest[1] == null) {
             return PersistentVector(newRest[0] as Array<Any?>, newLast, restSize, shift - LOG_MAX_BUFFER_SIZE)
@@ -143,25 +142,25 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
         return PersistentVector(newRest, newLast, restSize, shift)
     }
 
-    private fun pullLastBuffer(rest: Array<Any?>, shift: Int, index: Int): Pair<Array<Any?>?, Array<Any?>> {
+    private fun pullLastBuffer(rest: Array<Any?>, shift: Int, index: Int, lastWrapper: ObjectWrapper): Array<Any?>? {
         val bufferIndex = (index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
 
         if (shift == LOG_MAX_BUFFER_SIZE) {
-            val lastBuffer = rest[bufferIndex] as Array<Any?>
+            lastWrapper.value = rest[bufferIndex]
             if (bufferIndex == 0) {
-                return Pair(null, lastBuffer)
+                return null
             }
             val newRest = rest.copyOf()
             newRest[bufferIndex] = null
-            return Pair(newRest, lastBuffer)
+            return newRest
         }
-        val pair = pullLastBuffer(rest[bufferIndex] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, index)
-        if (pair.first == null && bufferIndex == 0) {
-            return Pair(null, pair.second)
+        val bufferAtIndex = pullLastBuffer(rest[bufferIndex] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, index, lastWrapper)
+        if (bufferAtIndex == null && bufferIndex == 0) {
+            return null
         }
         val newRest = rest.copyOf()
-        newRest[bufferIndex] = pair.first
-        return Pair(newRest, pair.second)
+        newRest[bufferIndex] = bufferAtIndex
+        return newRest
     }
 
     private fun removeFromLast(rest: Array<Any?>, restSize: Int, shift: Int, index: Int): ImmutableList<E> {
@@ -179,32 +178,27 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
         return PersistentVector(rest, newLast as Array<E>, restSize + lastFilledSize - 1, shift)
     }
 
-    private fun removeFromRest(rest: Array<Any?>, shift: Int, index: Int, lastElement: E): Pair<Array<Any?>, Any?> {
+    private fun removeFromRest(rest: Array<Any?>, shift: Int, index: Int, lastWrapper: ObjectWrapper): Array<Any?> {
         val bufferIndex = (index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
 
         if (shift == 0) {
-            val firstElement = rest.first()
             val newRest = if (bufferIndex == 0) arrayOfNulls<Any?>(MAX_BUFFER_SIZE) else rest.copyOf()
             System.arraycopy(rest, bufferIndex + 1, newRest, bufferIndex, MAX_BUFFER_SIZE - bufferIndex - 1)
-            newRest[MAX_BUFFER_SIZE - 1] = lastElement
-            return Pair(newRest, firstElement)
+            newRest[MAX_BUFFER_SIZE - 1] = lastWrapper.value
+            lastWrapper.value = rest[0]
+            return newRest
         }
 
         var bufferLastIndex = bufferIndex
         while (bufferLastIndex + 1 < MAX_BUFFER_SIZE && rest[bufferLastIndex + 1] != null) bufferLastIndex += 1  // TODO: optimize
+
         val newRest = rest.copyOf()
-
-        var pair = Pair(newRest, lastElement as Any?)
-
         for (i in bufferLastIndex downTo bufferIndex + 1) {
-            pair = removeFromRest(newRest[i] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, 0, pair.second as E)
-            newRest[i] = pair.first
+            newRest[i] = removeFromRest(newRest[i] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, 0, lastWrapper)
         }
+        newRest[bufferIndex] = removeFromRest(newRest[bufferIndex] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, index, lastWrapper)
 
-        pair = removeFromRest(newRest[bufferIndex] as Array<Any?>, shift - LOG_MAX_BUFFER_SIZE, index, pair.second as E)
-        newRest[bufferIndex] = pair.first
-
-        return Pair(newRest, pair.second)
+        return newRest
     }
 
     override fun subList(fromIndex: Int, toIndex: Int): ImmutableList<E> {
