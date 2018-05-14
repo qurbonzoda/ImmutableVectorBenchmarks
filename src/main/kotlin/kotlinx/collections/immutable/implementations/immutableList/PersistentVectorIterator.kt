@@ -21,8 +21,12 @@ internal class PersistentVectorIterator<out T>(rest: Array<Any?>,
                                                index: Int,
                                                size: Int,
                                                restHeight: Int) : AbstractListIterator<T>(index, size) {
-    private val restListIterator = TrieIterator<T>(rest, index,
-            ((size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE, restHeight)
+    private val restListIterator = TrieIterator<T>(rest, if (restSize() < index) restSize() else index,
+            restSize(), restHeight)
+
+    private fun restSize(): Int {
+        return ((size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
+    }
 
     override fun next(): T {
         if (!hasNext()) {
