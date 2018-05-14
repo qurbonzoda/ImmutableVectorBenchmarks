@@ -34,4 +34,13 @@ open class Iterate {
             bh.consume(e)
         }
     }
+
+    @Benchmark
+    fun lastToFirst(bh: Blackhole) {
+        val iterator = vector.listIterator(listSize)
+
+        while (iterator.hasPrevious()) {
+            bh.consume(iterator.previous())
+        }
+    }
 }
