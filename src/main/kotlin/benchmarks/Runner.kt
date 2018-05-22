@@ -7,6 +7,11 @@ import org.openjdk.jmh.runner.options.TimeValue
 import java.io.FileWriter
 
 fun main(args: Array<String>) {
+    val millisInSecond = 1000L
+    val secondsInMinute = 60L
+    val tenMinutes = 5 * secondsInMinute * millisInSecond
+    Thread.sleep(tenMinutes)
+
     for (implementation in args) {
         val outputFile = "teamcityArtifacts/$implementation.csv"
         val options = OptionsBuilder()
