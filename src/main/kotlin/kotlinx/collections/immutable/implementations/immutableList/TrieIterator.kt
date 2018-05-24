@@ -30,9 +30,11 @@ internal class TrieIterator<out E>(root: Array<Any?>,
 
     private fun fillPath(index: Int, startLevel: Int) {
         var shift = (height - startLevel) * LOG_MAX_BUFFER_SIZE
-        for (i in startLevel until height) {
+        var i = startLevel
+        while (i < height) {
             path[i] = (path[i - 1] as Array<Any?>)[indexAtShift(index, shift)]
             shift -= LOG_MAX_BUFFER_SIZE
+            i += 1
         }
     }
 

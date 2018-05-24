@@ -16,37 +16,37 @@
 
 package kotlinx.collections.immutable.implementations.immutableList
 
-internal class PersistentVectorIterator<out T>(rest: Array<Any?>,
-                                               private val last: Array<T>,
+internal class PersistentVectorIterator<out T>(root: Array<Any?>,
+                                               private val tail: Array<T>,
                                                index: Int,
                                                size: Int,
                                                restHeight: Int) : AbstractListIterator<T>(index, size) {
-    private val restListIterator = TrieIterator<T>(rest, if (restSize() < index) restSize() else index,
-            restSize(), restHeight)
+    private val rootIterator: TrieIterator<T>
 
-    private fun restSize(): Int {
-        return ((size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
+    init {
+        val rootSize = ((size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
+        rootIterator = TrieIterator(root, if (rootSize < index) rootSize else index, rootSize, restHeight)
     }
 
     override fun next(): T {
         if (!hasNext()) {
             throw NoSuchElementException()
         }
-        if (restListIterator.hasNext()) {
+        if (rootIterator.hasNext()) {
             index++
-            return restListIterator.next()
+            return rootIterator.next()
         }
-        return last[index++ - restListIterator.size]
+        return tail[index++ - rootIterator.size]
     }
 
     override fun previous(): T {
         if (!hasPrevious()) {
             throw NoSuchElementException()
         }
-        if (index > restListIterator.size) {
-            return last[--index - restListIterator.size]
+        if (index > rootIterator.size) {
+            return tail[--index - rootIterator.size]
         }
         index--
-        return restListIterator.previous()
+        return rootIterator.previous()
     }
 }
