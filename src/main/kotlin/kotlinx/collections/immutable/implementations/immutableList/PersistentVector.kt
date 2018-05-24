@@ -254,13 +254,14 @@ internal class PersistentVector<E>(private val rest: Array<Any?>,
     }
 
     private fun bufferFor(index: Int): Array<E> {
-        val lastOff = this.lastOff()
-        if (lastOff <= index) {
+        if (this.lastOff() <= index) {
             return this.last
         }
         var buffer = this.rest
-        for (shift in this.shiftStart downTo 1 step LOG_MAX_BUFFER_SIZE) {
+        var shift = this.shiftStart
+        while (shift > 1) {
             buffer = buffer[(index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE] as Array<Any?>
+            shift -= LOG_MAX_BUFFER_SIZE
         }
         return buffer as Array<E>
     }

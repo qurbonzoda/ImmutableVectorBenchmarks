@@ -9,19 +9,19 @@ import java.io.FileWriter
 fun main(args: Array<String>) {
     val millisInSecond = 1000L
     val secondsInMinute = 60L
-    val tenMinutes = 5 * secondsInMinute * millisInSecond
-    Thread.sleep(tenMinutes)
+    val fiveMinutes = 5 * secondsInMinute * millisInSecond
+    Thread.sleep(fiveMinutes)
 
     for (implementation in args) {
         val outputFile = "teamcityArtifacts/$implementation.csv"
         val options = OptionsBuilder()
                 .jvmArgs("-Xms3072m", "-Xmx3072m")
 //                .include("addLast$")
-//                .include("getByIndex")
+                .include("$implementation.Get.getByIndex")
 //                .include("setByIndex")
 //                .include("firstToLast")
 //                .include("removeLast")
-                .include(implementation)
+//                .include(implementation)
                 .warmupIterations(10)
                 .measurementIterations(10)
                 .warmupTime(TimeValue.milliseconds(500))
