@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     val fiveMinutes = 5 * secondsInMinute * millisInSecond
     Thread.sleep(fiveMinutes)
 
-    for (implementation in args) {
+    for (implementation in listOf("persistentVector", "persistentVectorMarker")) {
         val outputFile = "teamcityArtifacts/$implementation.csv"
         val options = OptionsBuilder()
                 .jvmArgs("-Xms3072m", "-Xmx3072m")
@@ -21,7 +21,10 @@ fun main(args: Array<String>) {
 //                .include("setByIndex")
 //                .include("firstToLast")
 //                .include("removeLast")
-                .include(implementation)
+                .include("$implementation.Add.addLast$")
+                .include("$implementation.Get")
+                .include("$implementation.Set")
+//                .include(implementation)
                 .warmupIterations(10)
                 .measurementIterations(10)
                 .warmupTime(TimeValue.milliseconds(500))
