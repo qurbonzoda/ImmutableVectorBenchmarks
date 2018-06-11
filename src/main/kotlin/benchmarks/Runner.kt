@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 //                .include("$implementation.Set")
 //                .include("$implementation.Remove")
 //                .include("$implementation.Iterate")
-//                .include(implementation)
+                .include(implementation)
                 .warmupIterations(10)
                 .measurementIterations(10)
                 .warmupTime(TimeValue.milliseconds(500))
