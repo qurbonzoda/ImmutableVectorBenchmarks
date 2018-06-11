@@ -1,10 +1,8 @@
-package benchmarks.builder
+package benchmarks.dexxVector
 
 import benchmarks.*
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.implementations.immutableList.persistentVectorOf
+import com.github.andrewoma.dexx.collection.Vector
 import org.openjdk.jmh.annotations.*
-import org.openjdk.jmh.infra.Blackhole
 import java.util.concurrent.TimeUnit
 
 @Fork(1)
@@ -17,21 +15,21 @@ open class Remove {
     @Param(BM_1, BM_10,  BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    var preparedVector: ImmutableList<String> = persistentVectorOf()
+    private var preparedVector = Vector.empty<String>()
 
     @Setup(Level.Trial)
     fun prepare() {
-        preparedVector = persistentVectorOf()
+        preparedVector = Vector.empty<String>()
         repeat(times = listSize) {
-            preparedVector = preparedVector.add("some element")
+            preparedVector = preparedVector.append("some element")
         }
     }
 
     @Benchmark
-    fun removeLast(bh: Blackhole): ImmutableList.Builder<String> {
-        val vector = preparedVector.builder()
+    fun removeLast(): Vector<String> {
+        var vector = preparedVector
         for (i in 0 until listSize) {
-            bh.consume(vector.removeAt(vector.size - 1))
+            vector = vector.take(vector.size() - 1)
         }
         return vector
     }

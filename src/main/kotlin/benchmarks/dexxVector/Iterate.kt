@@ -1,7 +1,7 @@
-package benchmarks.clojureVector
+package benchmarks.dexxVector
 
 import benchmarks.*
-import clojure.lang.PersistentVector
+import com.github.andrewoma.dexx.collection.Vector
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
 import java.util.concurrent.TimeUnit
@@ -16,13 +16,13 @@ open class Iterate {
     @Param(BM_1, BM_10,  BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    private var vector = PersistentVector.EMPTY
+    private var vector = Vector.empty<String>()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = PersistentVector.EMPTY
+        this.vector = Vector.empty<String>()
         repeat(times = listSize) {
-            vector = vector.cons("some element")
+            vector = vector.append("some element")
         }
     }
 
@@ -35,10 +35,10 @@ open class Iterate {
 
     @Benchmark
     fun lastToFirst(bh: Blackhole) {
-        val iterator = vector.listIterator(listSize)
+        val iterator = vector.reversed().iterator()
 
-        while (iterator.hasPrevious()) {
-            bh.consume(iterator.previous())
+        while (iterator.hasNext()) {
+            bh.consume(iterator.next())
         }
     }
 }

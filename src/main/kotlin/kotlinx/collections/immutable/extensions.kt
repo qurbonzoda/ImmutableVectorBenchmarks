@@ -21,10 +21,10 @@ package kotlinx.collections.immutable
 //@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
 //inline fun <T> @kotlin.internal.Exact ImmutableCollection<T>.mutate(mutator: (MutableCollection<T>) -> Unit): ImmutableCollection<T> = builder().apply(mutator).build()
 // it or this?
-inline fun <T> ImmutableSet<T>.mutate(mutator: (MutableSet<T>) -> Unit): ImmutableSet<T> = builder().apply(mutator).build()
+//inline fun <T> ImmutableSet<T>.mutate(mutator: (MutableSet<T>) -> Unit): ImmutableSet<T> = builder().apply(mutator).build()
 inline fun <T> ImmutableList<T>.mutate(mutator: (MutableList<T>) -> Unit): ImmutableList<T> = builder().apply(mutator).build()
 
-inline fun <K, V> ImmutableMap<K, V>.mutate(mutator: (MutableMap<K, V>) -> Unit): ImmutableMap<K, V> = builder().apply(mutator).build()
+//inline fun <K, V> ImmutableMap<K, V>.mutate(mutator: (MutableMap<K, V>) -> Unit): ImmutableMap<K, V> = builder().apply(mutator).build()
 
 
 inline operator fun <E> ImmutableCollection<E>.plus(element: E): ImmutableCollection<E> = add(element)
@@ -67,54 +67,54 @@ operator fun <E> ImmutableList<E>.minus(elements: Sequence<E>): ImmutableList<E>
         = mutate { it.removeAll(elements) }
 
 
-inline operator fun <E> ImmutableSet<E>.plus(element: E): ImmutableSet<E> = add(element)
-inline operator fun <E> ImmutableSet<E>.minus(element: E): ImmutableSet<E> = remove(element)
+//inline operator fun <E> ImmutableSet<E>.plus(element: E): ImmutableSet<E> = add(element)
+//inline operator fun <E> ImmutableSet<E>.minus(element: E): ImmutableSet<E> = remove(element)
 
-operator fun <E> ImmutableSet<E>.plus(elements: Iterable<E>): ImmutableSet<E>
-        = if (elements is Collection) addAll(elements) else mutate { it.addAll(elements) }
-operator fun <E> ImmutableSet<E>.plus(elements: Array<out E>): ImmutableSet<E>
-        = mutate { it.addAll(elements) }
-operator fun <E> ImmutableSet<E>.plus(elements: Sequence<E>): ImmutableSet<E>
-        = mutate { it.addAll(elements) }
-
-
-operator fun <E> ImmutableSet<E>.minus(elements: Iterable<E>): ImmutableSet<E>
-        = if (elements is Collection) removeAll(elements) else mutate { it.removeAll(elements) }
-operator fun <E> ImmutableSet<E>.minus(elements: Array<out E>): ImmutableSet<E>
-        = mutate { it.removeAll(elements) }
-operator fun <E> ImmutableSet<E>.minus(elements: Sequence<E>): ImmutableSet<E>
-        = mutate { it.removeAll(elements) }
-
-
-inline operator fun <K, V> ImmutableMap<out K, V>.plus(pair: Pair<K, V>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).put(pair.first, pair.second)
-inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Iterable<Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
-inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Array<out Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
-inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Sequence<Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
-inline operator fun <K, V> ImmutableMap<out K, V>.plus(map: Map<out K, V>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).putAll(map)
-
-public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Iterable<Pair<K, V>>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
-
-public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Array<out Pair<K, V>>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
-
-public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Sequence<Pair<K, V>>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
-
-
-public operator fun <K, V> ImmutableMap<out K, V>.minus(key: K): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).remove(key)
-
-public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Iterable<K>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
-
-public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Array<out K>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
-
-public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Sequence<K>): ImmutableMap<K, V>
-        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
+//operator fun <E> ImmutableSet<E>.plus(elements: Iterable<E>): ImmutableSet<E>
+//        = if (elements is Collection) addAll(elements) else mutate { it.addAll(elements) }
+//operator fun <E> ImmutableSet<E>.plus(elements: Array<out E>): ImmutableSet<E>
+//        = mutate { it.addAll(elements) }
+//operator fun <E> ImmutableSet<E>.plus(elements: Sequence<E>): ImmutableSet<E>
+//        = mutate { it.addAll(elements) }
+//
+//
+//operator fun <E> ImmutableSet<E>.minus(elements: Iterable<E>): ImmutableSet<E>
+//        = if (elements is Collection) removeAll(elements) else mutate { it.removeAll(elements) }
+//operator fun <E> ImmutableSet<E>.minus(elements: Array<out E>): ImmutableSet<E>
+//        = mutate { it.removeAll(elements) }
+//operator fun <E> ImmutableSet<E>.minus(elements: Sequence<E>): ImmutableSet<E>
+//        = mutate { it.removeAll(elements) }
+//
+//
+//inline operator fun <K, V> ImmutableMap<out K, V>.plus(pair: Pair<K, V>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).put(pair.first, pair.second)
+//inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Iterable<Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
+//inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Array<out Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
+//inline operator fun <K, V> ImmutableMap<out K, V>.plus(pairs: Sequence<Pair<K, V>>): ImmutableMap<K, V> = putAll(pairs)
+//inline operator fun <K, V> ImmutableMap<out K, V>.plus(map: Map<out K, V>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).putAll(map)
+//
+//public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Iterable<Pair<K, V>>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
+//
+//public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Array<out Pair<K, V>>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
+//
+//public fun <K, V> ImmutableMap<out K, V>.putAll(pairs: Sequence<Pair<K, V>>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.putAll(pairs) }
+//
+//
+//public operator fun <K, V> ImmutableMap<out K, V>.minus(key: K): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).remove(key)
+//
+//public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Iterable<K>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
+//
+//public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Array<out K>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
+//
+//public operator fun <K, V> ImmutableMap<out K, V>.minus(keys: Sequence<K>): ImmutableMap<K, V>
+//        = (this as ImmutableMap<K, V>).mutate { it.minusAssign(keys) }
 
 
 //fun <E> immutableListOf(vararg elements: E): ImmutableList<E> = ImmutableVectorList.emptyOf<E>().addAll(elements.asList())

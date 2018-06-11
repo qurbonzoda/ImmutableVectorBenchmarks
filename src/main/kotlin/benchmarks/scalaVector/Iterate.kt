@@ -1,7 +1,7 @@
 package benchmarks.scalaVector
 
 import benchmarks.*
-import com.aol.cyclops.scala.collections.ScalaPVector
+import scala.collection.immutable.`Vector$`
 import org.openjdk.jmh.annotations.*
 import org.openjdk.jmh.infra.Blackhole
 import java.util.concurrent.TimeUnit
@@ -13,17 +13,16 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)
 open class Iterate {
-    @Param(BM_1, BM_4, BM_10, BM_15, BM_20, BM_25, BM_50,
-            BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
+    @Param(BM_1, BM_10,  BM_100, BM_1000, BM_10000, BM_100000, BM_1000000, BM_10000000)
     var listSize: Int = 0
 
-    var vector = ScalaPVector.emptyPVector<String>()
+    private var vector = `Vector$`.`MODULE$`.empty<String>()
 
     @Setup(Level.Trial)
     fun prepare() {
-        this.vector = ScalaPVector.emptyPVector<String>()
+        this.vector = `Vector$`.`MODULE$`.empty<String>()
         repeat(times = listSize) {
-            vector = vector.plus("some element")
+            vector = vector.appendBack("some element")
         }
     }
 
@@ -36,10 +35,10 @@ open class Iterate {
 
     @Benchmark
     fun lastToFirst(bh: Blackhole) {
-        val iterator = vector.listIterator(listSize)
+        val iterator = vector.reverseIterator()
 
-        while (iterator.hasPrevious()) {
-            bh.consume(iterator.previous())
+        while (iterator.hasNext()) {
+            bh.consume(iterator.next())
         }
     }
 }
